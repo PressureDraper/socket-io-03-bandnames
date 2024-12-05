@@ -1,35 +1,58 @@
 import React, { useEffect, useState } from 'react'
 import { BandAdd } from './components/BandAdd'
 import { BandList } from './components/BandList'
-import { Socket, io } from 'socket.io-client'
-
-const connectSocketServer = () => {
-    const socket = io("http://localhost:9191", { transports: ['websocket'] });
-    return socket;
-}
+import { Socket } from 'socket.io-client'
+import { socketConnection } from './socket'
+import { BandsPropsInterface } from './interfaces/IBands'
 
 export const App = () => {
-    const [socket, setSocket] = useState<Socket>(connectSocketServer());
+    const [socket, setSocket] = useState<Socket>(socketConnection);
     const [isOnline, setIsOnline] = useState<boolean>(false);
-    const [bands, setBands] = useState();
+    const [bands, setBands] = useState<BandsPropsInterface[]>([]);
+
+    useEffect(() => {//connect socket when component is rendered and disconnects when is unmounted only if has to be used in specific component of the application. If the socket is needed in all the app remove cleanup function
+        socket.connect();
+
+        /* return () => {
+            socket.disconnect();
+        } */
+    }, []);
 
     useEffect(() => {
-        socket.on('connect', () => {
+        const connect = () => {
             setIsOnline(true);
-        })
+        }
+
+        socket.on('connect', connect);
+
+        return () => { //turn off listener
+            socket.off('connect', connect);
+        }
     }, [socket]);
 
     useEffect(() => {
-        socket.on('disconnect', () => {
+        const disconnect = () => {
             setIsOnline(false);
-        })
+        }
+
+        socket.on('disconnect', disconnect);
+
+        return () => {
+            socket.off('disconnect', disconnect);
+        }
     }, [socket]);
 
     useEffect(() => {
-        socket.on('getBands', (data) => {
+        const getBands = (data: any) => {
             setBands(data);
-        });
-    }, [socket]); 
+        }
+
+        socket.on('getBands', getBands);
+
+        return () => {
+            socket.off('getBands', getBands);
+        }
+    }, [socket]);
 
     return (
         <div className='container'>
@@ -45,7 +68,10 @@ export const App = () => {
 
             <div className="row">
                 <div className="col-8">
-                    <BandList />
+                    <BandList
+                        data={bands}
+                        socket={socket}
+                    />
                 </div>
                 <div className="col-4">
                     <BandAdd />
