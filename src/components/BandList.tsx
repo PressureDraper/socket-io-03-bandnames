@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { BandsGeneralInterface, BandsPropsInterface } from '../interfaces/IBands';
 
 export const BandList = ({ data, socket }: BandsGeneralInterface) => {
-    const [bands, setBands] = useState<BandsPropsInterface[]>(data);
+    const [bands, setBands] = useState<BandsPropsInterface[]>(data ? data : []);
 
     useEffect(() => {
-        setBands(data);
+        setBands(data ? data : []);
     }, [data]);
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {

@@ -74,7 +74,9 @@ export const App = () => {
                     />
                 </div>
                 <div className="col-4">
-                    <BandAdd />
+                    <BandAdd
+                        socket={socket}
+                    />
                 </div>
             </div>
         </div>

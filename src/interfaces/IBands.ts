@@ -7,6 +7,6 @@ export interface BandsPropsInterface {
 }
 
 export interface BandsGeneralInterface {
-    data: BandsPropsInterface[];
+    data?: BandsPropsInterface[];
     socket: Socket;
 }
