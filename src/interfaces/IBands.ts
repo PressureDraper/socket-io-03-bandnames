@@ -6,7 +6,7 @@ export interface BandsPropsInterface {
     votes: number;
 }
 
-export interface BandsGeneralInterface {
-    data?: BandsPropsInterface[];
-    socket: Socket;
+export interface PropsSocketContext {
+    socket: Socket | null;
+    isOnline: boolean;
 }

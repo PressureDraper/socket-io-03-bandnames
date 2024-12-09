@@ -1,12 +1,22 @@
-import React, { useEffect, useState } from 'react'
-import { BandsGeneralInterface, BandsPropsInterface } from '../interfaces/IBands';
+import React, { useContext, useEffect, useState } from 'react'
+import { BandsPropsInterface } from '../interfaces/IBands';
+import { SocketContext } from '../context/SocketContext';
 
-export const BandList = ({ data, socket }: BandsGeneralInterface) => {
-    const [bands, setBands] = useState<BandsPropsInterface[]>(data ? data : []);
+export const BandList = () => {
+    const { socket } = useContext(SocketContext);
+    const [bands, setBands] = useState<BandsPropsInterface[]>([]);
 
     useEffect(() => {
-        setBands(data ? data : []);
-    }, [data]);
+        const getBands = (data: any) => {
+            setBands(data);
+        }
+
+        socket?.on('getBands', getBands);
+
+        return () => {
+            socket?.off('getBands', getBands);
+        }
+    }, [socket]);
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
         setBands((bands: BandsPropsInterface[]) => bands.map((band: BandsPropsInterface) => {
@@ -19,15 +29,15 @@ export const BandList = ({ data, socket }: BandsGeneralInterface) => {
     }
 
     const handleOnBlur = (id: string, name: string) => {
-        socket.emit('changeBandName', id, name)
+        socket?.emit('changeBandName', id, name)
     }
 
     const handleIncrementVotes = (id: string) => {
-        socket.emit('increseVotes', id);
+        socket?.emit('increseVotes', id);
     }
 
     const handleDeleteBand = (id: string) => {
-        socket.emit('deleteBand', id);
+        socket?.emit('deleteBand', id);
     }
 
     const createRows = () => {

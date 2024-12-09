@@ -1,15 +1,16 @@
-import React, { useState } from 'react'
-import { BandsGeneralInterface } from '../interfaces/IBands';
+import React, { useContext, useState } from 'react';
+import { SocketContext } from '../context/SocketContext';
 
-export const BandAdd = ({ socket }: BandsGeneralInterface) => {
+export const BandAdd = () => {
     const [bandName, setBandName] = useState<string>('');
+    const { socket } = useContext(SocketContext);
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (bandName.trim().length > 0) {
             setBandName('');
-            socket.emit('addBand', bandName);
+            socket?.emit('addBand', bandName);
         }
     }
 
